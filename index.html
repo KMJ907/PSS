@@ -3,21 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>가채점</title>
 
-<!-- Excel(.xlsx) 생성 -->
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<!--
+    xlsx-js-style
+    Excel 파일에 실제 셀 스타일을 적용하기 위해 사용
+-->
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 
 <style>
+/* =========================================================
+   기본
+========================================================= */
+
+:root {
+    --primary: #4f46e5;
+    --primary-light: #eef2ff;
+    --primary-dark: #3730a3;
+
+    --green: #16a34a;
+    --green-light: #ecfdf3;
+
+    --red: #dc2626;
+    --red-light: #fef2f2;
+
+    --orange: #d97706;
+    --orange-light: #fff7ed;
+
+    --text: #18181b;
+    --subtext: #71717a;
+
+    --border: #e4e4e7;
+    --background: #f7f7f9;
+    --card: #ffffff;
+
+    --radius: 14px;
+}
+
 * {
     box-sizing: border-box;
 }
 
+html,
 body {
     margin: 0;
-    font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
-    background: #f5f7fb;
-    color: #202124;
+    min-height: 100%;
+}
+
+body {
+    font-family:
+        "Pretendard",
+        "Apple SD Gothic Neo",
+        "Malgun Gothic",
+        "맑은 고딕",
+        sans-serif;
+
+    background: var(--background);
+    color: var(--text);
 }
 
 button,
@@ -27,364 +70,999 @@ select {
 }
 
 button {
-    border: 0;
     cursor: pointer;
 }
+
+
+/* =========================================================
+   앱
+========================================================= */
 
 .app {
     min-height: 100vh;
     display: flex;
 }
 
-/* 사이드바 */
+
+/* =========================================================
+   사이드바
+========================================================= */
+
 .sidebar {
-    width: 240px;
-    background: #ffffff;
-    border-right: 1px solid #e5e7eb;
-    padding: 22px 16px;
+    width: 250px;
+    flex-shrink: 0;
+
+    background: #fff;
+    border-right: 1px solid var(--border);
+
     display: flex;
     flex-direction: column;
+
+    padding: 22px 14px;
+
+    position: sticky;
+    top: 0;
+    height: 100vh;
 }
 
 .logo {
-    font-size: 22px;
-    font-weight: 800;
-    margin-bottom: 24px;
+    padding: 4px 10px 22px;
+
+    font-size: 23px;
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
+.logo-mark {
+    display: inline-flex;
+    width: 34px;
+    height: 34px;
+
+    align-items: center;
+    justify-content: center;
+
+    background: var(--primary);
+    color: white;
+
+    border-radius: 10px;
+
+    margin-right: 8px;
+
+    font-size: 17px;
 }
 
 .logo span {
-    color: #4f46e5;
+    color: var(--primary);
 }
 
-.sidebar-title {
-    font-size: 13px;
-    color: #777;
-    margin: 8px 8px;
+.sidebar-section-title {
+    padding: 0 10px 8px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    color: #a1a1aa;
 }
 
 .subject-list {
     flex: 1;
+
     overflow-y: auto;
+
+    padding-right: 2px;
 }
 
 .subject-item {
     width: 100%;
-    padding: 11px 12px;
-    margin-bottom: 4px;
-    border-radius: 9px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border: 0;
     background: transparent;
+
+    padding: 11px 12px;
+    margin-bottom: 3px;
+
+    border-radius: 10px;
+
+    color: #52525b;
+
     text-align: left;
-    color: #333;
 }
 
 .subject-item:hover {
-    background: #f1f3f7;
+    background: #f4f4f5;
 }
 
 .subject-item.active {
-    background: #eef2ff;
-    color: #4338ca;
-    font-weight: 700;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    font-weight: 800;
 }
 
-.add-subject {
-    margin-top: 12px;
-    padding: 11px;
-    border-radius: 9px;
-    background: #4f46e5;
-    color: white;
-    font-weight: 700;
+.subject-item-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-/* 메인 */
+.subject-item-count {
+    min-width: 22px;
+
+    padding: 2px 6px;
+
+    border-radius: 20px;
+
+    background: #f4f4f5;
+    color: #71717a;
+
+    font-size: 11px;
+    text-align: center;
+}
+
+.subject-item.active .subject-item-count {
+    background: white;
+    color: var(--primary);
+}
+
+.add-subject-btn {
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border: 1px solid #c7d2fe;
+    border-radius: 10px;
+
+    background: var(--primary-light);
+    color: var(--primary-dark);
+
+    font-weight: 800;
+
+    margin-top: 10px;
+}
+
+.add-subject-btn:hover {
+    background: #e0e7ff;
+}
+
+
+/* =========================================================
+   메인
+========================================================= */
+
 .main {
     flex: 1;
     min-width: 0;
-    padding: 28px;
+
+    padding: 30px;
 }
 
-.header {
+.topbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+
+    gap: 15px;
+
+    margin-bottom: 25px;
 }
 
-.header h1 {
+.page-title {
     margin: 0;
-    font-size: 26px;
+
+    font-size: 27px;
+    font-weight: 900;
+
+    letter-spacing: -1px;
 }
 
-.header-actions {
+.page-subtitle {
+    margin-top: 5px;
+
+    color: var(--subtext);
+    font-size: 14px;
+}
+
+.top-actions {
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
+
+/* =========================================================
+   버튼
+========================================================= */
+
 .btn {
-    padding: 10px 15px;
-    border-radius: 8px;
+    min-height: 40px;
+
+    padding: 9px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
     background: white;
-    border: 1px solid #ddd;
+    color: #3f3f46;
+
+    font-weight: 700;
+
+    transition:
+        background .15s,
+        border-color .15s,
+        transform .1s;
 }
 
 .btn:hover {
-    background: #f7f7f7;
+    background: #fafafa;
+    border-color: #d4d4d8;
 }
 
-.btn.primary {
-    background: #4f46e5;
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    background: var(--primary);
+    border-color: var(--primary);
     color: white;
-    border-color: #4f46e5;
 }
 
-.btn.danger {
-    color: #dc2626;
+.btn-primary:hover {
+    background: #4338ca;
+    border-color: #4338ca;
 }
 
-/* 카드 */
+.btn-danger {
+    color: var(--red);
+}
+
+.btn-small {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   카드
+========================================================= */
+
 .card {
-    background: white;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
+    background: var(--card);
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
     padding: 22px;
-    margin-bottom: 20px;
+
+    margin-bottom: 18px;
+
+    box-shadow:
+        0 1px 2px rgba(0,0,0,.02);
 }
 
-.card-title {
-    font-size: 18px;
-    font-weight: 800;
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 15px;
+
     margin-bottom: 18px;
 }
 
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
+.card-title {
+    font-size: 17px;
+    font-weight: 900;
 }
 
-.form-group label {
-    display: block;
+.card-description {
+    color: var(--subtext);
     font-size: 13px;
-    color: #666;
-    margin-bottom: 6px;
+    margin-top: 4px;
 }
 
-.form-group input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #d9dce3;
-    border-radius: 8px;
-    outline: none;
-}
 
-.form-group input:focus {
-    border-color: #4f46e5;
-}
+/* =========================================================
+   시험 생성
+========================================================= */
 
-.create-row {
-    margin-top: 18px;
-    display: flex;
-    justify-content: flex-end;
-}
-
-/* 통계 */
-.stats {
+.exam-create-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+
+    grid-template-columns:
+        minmax(180px, 2fr)
+        minmax(130px, 1fr)
+        minmax(130px, 1fr)
+        minmax(180px, 1.5fr);
+
     gap: 12px;
 }
 
-.stat {
+.field label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    color: #71717a;
+}
+
+.field input,
+.field select {
+    width: 100%;
+
+    height: 42px;
+
+    padding: 0 11px;
+
+    border: 1px solid #d4d4d8;
+    border-radius: 9px;
+
+    background: white;
+
+    outline: none;
+}
+
+.field input:focus,
+.field select:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px rgba(79,70,229,.10);
+}
+
+.create-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 15px;
+}
+
+
+/* =========================================================
+   통계
+========================================================= */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+.stat-card {
+    background: white;
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
     padding: 17px;
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    background: #fafafa;
 }
 
 .stat-label {
-    font-size: 13px;
-    color: #777;
+    color: #71717a;
+
+    font-size: 12px;
+    font-weight: 700;
 }
 
 .stat-value {
+    margin-top: 7px;
+
     font-size: 23px;
-    font-weight: 800;
-    margin-top: 5px;
+    font-weight: 900;
+
+    letter-spacing: -.5px;
 }
 
-/* 채점표 */
+.stat-sub {
+    margin-top: 4px;
+
+    color: #a1a1aa;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   진행률
+========================================================= */
+
+.progress-area {
+    margin-top: 16px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+
+    margin-bottom: 7px;
+
+    font-size: 12px;
+    color: #71717a;
+}
+
+.progress {
+    width: 100%;
+    height: 7px;
+
+    background: #e4e4e7;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+
+    background: var(--primary);
+
+    border-radius: 20px;
+
+    transition: width .2s;
+}
+
+
+/* =========================================================
+   표
+========================================================= */
+
 .table-wrap {
+    width: 100%;
     overflow-x: auto;
+
+    border: 1px solid var(--border);
+    border-radius: 10px;
 }
 
 .score-table {
     width: 100%;
+
+    min-width: 650px;
+
     border-collapse: collapse;
+}
+
+.score-table th {
+    background: #fafafa;
+
+    color: #71717a;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    white-space: nowrap;
 }
 
 .score-table th,
 .score-table td {
-    border-bottom: 1px solid #e8e8e8;
     padding: 9px 8px;
+
+    border-bottom: 1px solid #eeeeef;
+
     text-align: center;
 }
 
-.score-table th {
-    background: #f7f8fa;
+.score-table tr:last-child td {
+    border-bottom: 0;
+}
+
+.score-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.question-number {
+    width: 65px;
+
+    font-weight: 800;
+}
+
+.table-input,
+.table-select {
+    width: 100%;
+
+    height: 34px;
+
+    padding: 0 7px;
+
+    border: 1px solid #e4e4e7;
+    border-radius: 7px;
+
+    background: white;
+
+    text-align: center;
+
+    outline: none;
+}
+
+.table-input:focus,
+.table-select:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 2px rgba(79,70,229,.08);
+}
+
+.result-badge {
+    display: inline-flex;
+
+    min-width: 30px;
+    height: 27px;
+
+    padding: 0 8px;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.result-correct {
+    background: var(--green-light);
+    color: var(--green);
+}
+
+.result-wrong {
+    background: var(--red-light);
+    color: var(--red);
+}
+
+.result-partial {
+    background: var(--orange-light);
+    color: var(--orange);
+}
+
+.result-empty {
+    background: #f4f4f5;
+    color: #a1a1aa;
+}
+
+
+/* =========================================================
+   시험 목록
+========================================================= */
+
+.exam-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.exam-row {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 15px 3px;
+
+    border-bottom: 1px solid #eeeeef;
+}
+
+.exam-row:last-child {
+    border-bottom: 0;
+}
+
+.exam-name {
+    font-weight: 800;
+}
+
+.exam-meta {
+    margin-top: 4px;
+
+    color: #a1a1aa;
+
+    font-size: 12px;
+}
+
+.exam-actions {
+    display: flex;
+    gap: 6px;
+}
+
+
+/* =========================================================
+   빈 상태
+========================================================= */
+
+.empty-state {
+    text-align: center;
+
+    padding: 75px 20px;
+}
+
+.empty-icon {
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 15px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    border-radius: 16px;
+
+    font-size: 24px;
+}
+
+.empty-state h2 {
+    margin: 0;
+
+    font-size: 19px;
+}
+
+.empty-state p {
+    color: #71717a;
+
+    font-size: 13px;
+
+    line-height: 1.7;
+
+    margin: 8px 0 18px;
+}
+
+
+/* =========================================================
+   시험 헤더
+========================================================= */
+
+.exam-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 20px;
+}
+
+.exam-title {
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.exam-info {
+    margin-top: 6px;
+
+    color: #71717a;
+
     font-size: 13px;
 }
 
-.score-table input,
-.score-table select {
-    width: 100%;
-    padding: 7px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    text-align: center;
+.exam-header-actions {
+    display: flex;
+
+    gap: 7px;
+
+    flex-wrap: wrap;
 }
 
-.correct {
-    color: #16a34a;
-    font-weight: 800;
+
+/* =========================================================
+   안내
+========================================================= */
+
+.notice {
+    display: flex;
+
+    gap: 10px;
+
+    padding: 12px 14px;
+
+    background: var(--primary-light);
+
+    color: #4338ca;
+
+    border-radius: 9px;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    margin-bottom: 16px;
 }
 
-.wrong {
-    color: #dc2626;
-    font-weight: 800;
-}
 
-.empty {
-    text-align: center;
-    padding: 80px 20px;
-    color: #777;
-}
+/* =========================================================
+   모달
+========================================================= */
 
-/* 모달 */
-.modal-bg {
+.modal-overlay {
     position: fixed;
+
     inset: 0;
-    background: rgba(0,0,0,.45);
+
     display: none;
+
     align-items: center;
     justify-content: center;
-    z-index: 100;
+
+    background: rgba(24,24,27,.45);
+
+    padding: 20px;
+
+    z-index: 1000;
 }
 
-.modal-bg.show {
+.modal-overlay.show {
     display: flex;
 }
 
 .modal {
     width: 420px;
-    max-width: calc(100vw - 30px);
+    max-width: 100%;
+
     background: white;
-    border-radius: 15px;
+
+    border-radius: 16px;
+
     padding: 24px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.2);
 }
 
 .modal h2 {
-    margin-top: 0;
+    margin: 0 0 7px;
+
+    font-size: 20px;
 }
 
-.modal input {
-    width: 100%;
-    padding: 11px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+.modal-description {
+    color: #71717a;
+
+    font-size: 13px;
+
+    margin-bottom: 18px;
 }
 
 .modal-actions {
     display: flex;
+
     justify-content: flex-end;
+
     gap: 8px;
+
     margin-top: 18px;
 }
 
-.notice {
+
+/* =========================================================
+   Toast
+========================================================= */
+
+.toast-container {
+    position: fixed;
+
+    right: 20px;
+    bottom: 20px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    z-index: 2000;
+}
+
+.toast {
     padding: 12px 15px;
-    background: #eef2ff;
-    color: #3730a3;
+
+    background: #18181b;
+    color: white;
+
     border-radius: 9px;
-    margin-bottom: 18px;
-    font-size: 14px;
+
+    font-size: 13px;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.2);
+
+    animation:
+        toast-in .2s ease;
 }
 
-@media (max-width: 900px) {
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 1000px) {
+
     .sidebar {
-        width: 190px;
+        width: 210px;
     }
 
-    .form-grid,
-    .stats {
-        grid-template-columns: repeat(2, 1fr);
+    .main {
+        padding: 22px;
+    }
+
+    .exam-create-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 }
 
-@media (max-width: 650px) {
+@media (max-width: 750px) {
+
     .app {
         display: block;
     }
 
     .sidebar {
+        position: static;
+
         width: 100%;
+        height: auto;
+
         border-right: 0;
-        border-bottom: 1px solid #ddd;
+        border-bottom: 1px solid var(--border);
+
+        padding: 15px;
+    }
+
+    .logo {
+        padding-bottom: 15px;
+    }
+
+    .subject-list {
+        max-height: 150px;
     }
 
     .main {
-        padding: 16px;
+        padding: 15px;
     }
 
-    .header {
+    .topbar {
         display: block;
     }
 
-    .header-actions {
-        margin-top: 12px;
-        flex-wrap: wrap;
+    .top-actions {
+        margin-top: 15px;
     }
 
-    .form-grid,
-    .stats {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .exam-header {
+        display: block;
+    }
+
+    .exam-header-actions {
+        margin-top: 15px;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .exam-create-grid {
         grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .card {
+        padding: 16px;
     }
 }
 </style>
 </head>
 
+
 <body>
 
 <div class="app">
 
+    <!-- =====================================================
+         사이드바
+    ====================================================== -->
+
     <aside class="sidebar">
-        <div class="logo"><span>가채점</span></div>
 
-        <div class="sidebar-title">과목</div>
+        <div class="logo">
+            <span class="logo-mark">✓</span>
+            가<span>채점</span>
+        </div>
 
-        <div id="subjectList" class="subject-list"></div>
+        <div class="sidebar-section-title">
+            과목
+        </div>
 
-        <button class="add-subject" onclick="openSubjectModal()">
-            + 과목 추가
+        <div
+            id="subjectList"
+            class="subject-list"
+        ></div>
+
+        <button
+            class="add-subject-btn"
+            onclick="openSubjectModal()"
+        >
+            ＋ 과목 추가
         </button>
+
     </aside>
+
+
+    <!-- =====================================================
+         메인
+    ====================================================== -->
 
     <main class="main">
 
-        <header class="header">
+        <div class="topbar">
+
             <div>
-                <h1 id="pageTitle">가채점</h1>
+                <h1
+                    id="pageTitle"
+                    class="page-title"
+                >
+                    가채점
+                </h1>
+
+                <div
+                    id="pageSubtitle"
+                    class="page-subtitle"
+                >
+                    시험 결과를 빠르게 기록하고 관리하세요.
+                </div>
             </div>
 
-            <div class="header-actions">
-                <button class="btn" onclick="exportBackup()">
-                    데이터 내보내기
+
+            <div class="top-actions">
+
+                <button
+                    class="btn"
+                    onclick="exportBackup()"
+                >
+                    백업
                 </button>
 
-                <button class="btn" onclick="document.getElementById('importFile').click()">
-                    데이터 가져오기
+                <button
+                    class="btn"
+                    onclick="document.getElementById('importFile').click()"
+                >
+                    복원
                 </button>
 
-                <button class="btn primary" onclick="exportExcel()">
+                <button
+                    class="btn btn-primary"
+                    onclick="exportExcel()"
+                >
                     Excel 내보내기
                 </button>
 
@@ -395,79 +1073,140 @@ button {
                     style="display:none"
                     onchange="importBackup(event)"
                 >
+
             </div>
-        </header>
+
+        </div>
+
 
         <div id="content"></div>
 
     </main>
+
 </div>
 
-<!-- 과목 추가 모달 -->
-<div id="subjectModal" class="modal-bg">
+
+<!-- =========================================================
+     과목 추가 모달
+========================================================= -->
+
+<div
+    id="subjectModal"
+    class="modal-overlay"
+>
+
     <div class="modal">
+
         <h2>과목 추가</h2>
 
-        <input
-            id="subjectName"
-            type="text"
-            placeholder="예: 국어"
-            onkeydown="if(event.key==='Enter') addSubject()"
-        >
+        <div class="modal-description">
+            가채점할 과목을 추가하세요.
+        </div>
+
+        <div class="field">
+
+            <label>과목명</label>
+
+            <input
+                id="subjectName"
+                type="text"
+                placeholder="예: 국어"
+                onkeydown="
+                    if(event.key === 'Enter') {
+                        addSubject();
+                    }
+                "
+            >
+
+        </div>
 
         <div class="modal-actions">
-            <button class="btn" onclick="closeSubjectModal()">취소</button>
-            <button class="btn primary" onclick="addSubject()">추가</button>
+
+            <button
+                class="btn"
+                onclick="closeSubjectModal()"
+            >
+                취소
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="addSubject()"
+            >
+                추가
+            </button>
+
         </div>
+
     </div>
+
 </div>
+
+
+<!-- =========================================================
+     Toast
+========================================================= -->
+
+<div
+    id="toastContainer"
+    class="toast-container"
+></div>
+
 
 <script>
 /* =========================================================
-   데이터
+   저장 데이터
 ========================================================= */
 
-const STORAGE_KEY = "ga_chaejum_v1";
+const STORAGE_KEY = "gachaejeom_data_v2";
 
 let data = loadData();
+
 let currentSubjectId = null;
 let currentExamId = null;
 
 
 /* =========================================================
-   초기 데이터
+   데이터 초기화
 ========================================================= */
 
-function createInitialData() {
-    return {
-        version: 1,
-        subjects: []
-    };
-}
-
 function loadData() {
+
     try {
-        const saved = localStorage.getItem(STORAGE_KEY);
+
+        const saved =
+            localStorage.getItem(STORAGE_KEY);
 
         if (!saved) {
-            return createInitialData();
+            return {
+                version: 2,
+                subjects: []
+            };
         }
 
-        const parsed = JSON.parse(saved);
+        const parsed =
+            JSON.parse(saved);
 
-        if (!parsed.subjects) {
+        if (!Array.isArray(parsed.subjects)) {
             parsed.subjects = [];
         }
 
         return parsed;
 
     } catch (error) {
+
         console.error(error);
-        return createInitialData();
+
+        return {
+            version: 2,
+            subjects: []
+        };
     }
 }
 
+
 function saveData() {
+
     localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify(data)
@@ -480,8 +1219,70 @@ function saveData() {
 ========================================================= */
 
 function createId() {
-    return Date.now().toString(36) +
-        Math.random().toString(36).substring(2, 8);
+
+    return (
+        Date.now().toString(36) +
+        Math.random()
+            .toString(36)
+            .substring(2, 8)
+    );
+}
+
+
+/* =========================================================
+   현재 데이터
+========================================================= */
+
+function getCurrentSubject() {
+
+    return data.subjects.find(
+        subject =>
+            subject.id === currentSubjectId
+    );
+}
+
+
+function getCurrentExam() {
+
+    const subject =
+        getCurrentSubject();
+
+    if (!subject) {
+        return null;
+    }
+
+    return subject.exams.find(
+        exam =>
+            exam.id === currentExamId
+    );
+}
+
+
+/* =========================================================
+   Toast
+========================================================= */
+
+function showToast(message) {
+
+    const container =
+        document.getElementById(
+            "toastContainer"
+        );
+
+    const toast =
+        document.createElement("div");
+
+    toast.className = "toast";
+
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+
+        toast.remove();
+
+    }, 2200);
 }
 
 
@@ -491,280 +1292,530 @@ function createId() {
 
 function renderSubjects() {
 
-    const list = document.getElementById("subjectList");
+    const list =
+        document.getElementById(
+            "subjectList"
+        );
 
     list.innerHTML = "";
 
     if (data.subjects.length === 0) {
+
         list.innerHTML = `
-            <div style="padding:10px;color:#888;font-size:13px;">
-                과목이 없습니다.
+            <div style="
+                padding:10px;
+                color:#a1a1aa;
+                font-size:12px;
+            ">
+                아직 과목이 없습니다.
             </div>
         `;
+
         return;
     }
 
+
     data.subjects.forEach(subject => {
 
-        const button = document.createElement("button");
+        const button =
+            document.createElement("button");
 
         button.className =
             "subject-item " +
-            (subject.id === currentSubjectId ? "active" : "");
+            (
+                subject.id === currentSubjectId
+                    ? "active"
+                    : ""
+            );
 
-        button.textContent = subject.name;
+
+        button.innerHTML = `
+            <span class="subject-item-name">
+                ${escapeHtml(subject.name)}
+            </span>
+
+            <span class="subject-item-count">
+                ${subject.exams.length}
+            </span>
+        `;
+
 
         button.onclick = () => {
-            currentSubjectId = subject.id;
+
+            currentSubjectId =
+                subject.id;
+
             currentExamId = null;
 
             renderSubjects();
             renderContent();
         };
 
+
         list.appendChild(button);
+
     });
 }
 
 
 /* =========================================================
-   과목 모달
+   과목 추가
 ========================================================= */
 
 function openSubjectModal() {
-    document.getElementById("subjectModal").classList.add("show");
+
+    document
+        .getElementById("subjectModal")
+        .classList.add("show");
 
     setTimeout(() => {
-        document.getElementById("subjectName").focus();
+
+        document
+            .getElementById("subjectName")
+            .focus();
+
     }, 50);
 }
 
+
 function closeSubjectModal() {
-    document.getElementById("subjectModal").classList.remove("show");
-    document.getElementById("subjectName").value = "";
+
+    document
+        .getElementById("subjectModal")
+        .classList.remove("show");
+
+    document
+        .getElementById("subjectName")
+        .value = "";
 }
+
 
 function addSubject() {
 
-    const input = document.getElementById("subjectName");
-    const name = input.value.trim();
+    const input =
+        document.getElementById(
+            "subjectName"
+        );
+
+    const name =
+        input.value.trim();
 
     if (!name) {
-        alert("과목명을 입력해주세요.");
+
+        showToast("과목명을 입력해주세요.");
+
+        input.focus();
+
         return;
     }
 
+
+    if (
+        data.subjects.some(
+            subject =>
+                subject.name === name
+        )
+    ) {
+
+        showToast("이미 존재하는 과목입니다.");
+
+        return;
+    }
+
+
     const subject = {
+
         id: createId(),
-        name: name,
+
+        name,
+
         exams: []
+
     };
+
 
     data.subjects.push(subject);
 
-    currentSubjectId = subject.id;
+    currentSubjectId =
+        subject.id;
+
     currentExamId = null;
 
     saveData();
 
     closeSubjectModal();
+
     renderSubjects();
     renderContent();
+
+    showToast(
+        `"${name}" 과목을 추가했습니다.`
+    );
 }
 
 
 /* =========================================================
-   현재 과목
+   과목 삭제
 ========================================================= */
 
-function getCurrentSubject() {
+function deleteSubject() {
 
-    return data.subjects.find(
-        subject => subject.id === currentSubjectId
-    );
-}
+    const subject =
+        getCurrentSubject();
 
-function getCurrentExam() {
+    if (!subject) {
+        return;
+    }
 
-    const subject = getCurrentSubject();
 
-    if (!subject) return null;
+    const confirmed =
+        confirm(
+            `"${subject.name}" 과목과 그 안의 모든 시험을 삭제할까요?`
+        );
 
-    return subject.exams.find(
-        exam => exam.id === currentExamId
-    );
+    if (!confirmed) {
+        return;
+    }
+
+
+    data.subjects =
+        data.subjects.filter(
+            item =>
+                item.id !== subject.id
+        );
+
+
+    currentSubjectId = null;
+    currentExamId = null;
+
+    saveData();
+
+    renderSubjects();
+    renderContent();
+
+    showToast("과목을 삭제했습니다.");
 }
 
 
 /* =========================================================
-   메인 화면
+   메인 렌더링
 ========================================================= */
 
 function renderContent() {
 
-    const content = document.getElementById("content");
+    const content =
+        document.getElementById(
+            "content"
+        );
 
-    const subject = getCurrentSubject();
+    const subject =
+        getCurrentSubject();
+
 
     if (!subject) {
 
-        document.getElementById("pageTitle").textContent = "가채점";
+        document.getElementById(
+            "pageTitle"
+        ).textContent = "가채점";
+
+
+        document.getElementById(
+            "pageSubtitle"
+        ).textContent =
+            "시험 결과를 빠르게 기록하고 관리하세요.";
+
 
         content.innerHTML = `
-            <div class="card empty">
-                <h2>가채점 서비스를 시작해보세요.</h2>
-                <p>왼쪽에서 과목을 추가한 후 시험을 생성할 수 있습니다.</p>
-                <button class="btn primary" onclick="openSubjectModal()">
-                    + 첫 과목 추가
-                </button>
+
+            <div class="card">
+
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        ✓
+                    </div>
+
+                    <h2>
+                        가채점을 시작해보세요
+                    </h2>
+
+                    <p>
+                        과목을 추가한 뒤 시험의<br>
+                        객관식·서논술형 문항을 입력할 수 있습니다.
+                    </p>
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="openSubjectModal()"
+                    >
+                        ＋ 첫 과목 추가
+                    </button>
+
+                </div>
+
             </div>
         `;
 
         return;
     }
 
-    document.getElementById("pageTitle").textContent =
+
+    document.getElementById(
+        "pageTitle"
+    ).textContent =
         subject.name;
 
-    const exam = getCurrentExam();
+
+    document.getElementById(
+        "pageSubtitle"
+    ).textContent =
+        `${subject.exams.length}개의 시험`;
+
+
+    const exam =
+        getCurrentExam();
+
 
     if (!exam) {
 
-        content.innerHTML = `
-            <div class="card">
-
-                <div class="card-title">
-                    새 시험 만들기
-                </div>
-
-                <div class="notice">
-                    객관식과 서·논술형 문항 수를 입력하면
-                    자동으로 채점표가 생성됩니다.
-                </div>
-
-                <div class="form-grid">
-
-                    <div class="form-group">
-                        <label>시험명</label>
-                        <input
-                            id="examName"
-                            placeholder="예: 1학기 중간고사"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label>객관식 문항 수</label>
-                        <input
-                            id="objectiveCount"
-                            type="number"
-                            min="0"
-                            value="20"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label>서·논술형 문항 수</label>
-                        <input
-                            id="subjectiveCount"
-                            type="number"
-                            min="0"
-                            value="0"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label>학생명</label>
-                        <input
-                            id="studentName"
-                            placeholder="선택 입력"
-                        >
-                    </div>
-
-                </div>
-
-                <div class="create-row">
-                    <button
-                        class="btn primary"
-                        onclick="createExam()"
-                    >
-                        채점표 생성
-                    </button>
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <div class="card-title">
-                    ${escapeHtml(subject.name)}의 시험
-                </div>
-
-                ${renderExamList(subject)}
-
-            </div>
-        `;
+        renderSubjectHome(
+            subject,
+            content
+        );
 
         return;
     }
 
-    renderExam(exam);
+
+    renderExam(
+        exam,
+        content
+    );
 }
 
 
 /* =========================================================
-   시험 목록
+   과목 홈
 ========================================================= */
 
-function renderExamList(subject) {
+function renderSubjectHome(
+    subject,
+    content
+) {
 
-    if (subject.exams.length === 0) {
-        return `
-            <div style="color:#888;">
-                아직 생성된 시험이 없습니다.
-            </div>
-        `;
-    }
+    content.innerHTML = `
 
-    return subject.exams.map(exam => {
+        <div class="card">
 
-        const score = calculateExam(exam);
-
-        return `
-            <div style="
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                padding:14px 0;
-                border-bottom:1px solid #eee;
-            ">
+            <div class="card-header">
 
                 <div>
-                    <strong>${escapeHtml(exam.name)}</strong>
-                    <div style="font-size:13px;color:#888;margin-top:4px;">
-                        ${score.totalScore} / ${score.totalPossible}
+                    <div class="card-title">
+                        새 시험 만들기
+                    </div>
+
+                    <div class="card-description">
+                        문항 수를 입력하면 채점표가 자동으로 생성됩니다.
                     </div>
                 </div>
 
-                <div>
-                    <button
-                        class="btn"
-                        onclick="openExam('${exam.id}')"
-                    >
-                        열기
-                    </button>
+            </div>
 
-                    <button
-                        class="btn danger"
-                        onclick="deleteExam('${exam.id}')"
+
+            <div class="notice">
+                <span>💡</span>
+
+                <span>
+                    객관식은 정답과 학생 정답을 비교하여
+                    득점을 자동으로 계산합니다.
+                    서·논술형은 득점을 직접 입력할 수 있습니다.
+                </span>
+            </div>
+
+
+            <div class="exam-create-grid">
+
+                <div class="field">
+
+                    <label>시험명</label>
+
+                    <input
+                        id="examName"
+                        placeholder="예: 1학기 중간고사"
                     >
-                        삭제
-                    </button>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>객관식 문항 수</label>
+
+                    <input
+                        id="objectiveCount"
+                        type="number"
+                        min="0"
+                        value="20"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>서·논술형 문항 수</label>
+
+                    <input
+                        id="subjectiveCount"
+                        type="number"
+                        min="0"
+                        value="0"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>학생명</label>
+
+                    <input
+                        id="studentName"
+                        placeholder="선택 입력"
+                    >
+
                 </div>
 
             </div>
-        `;
 
-    }).join("");
+
+            <div class="create-actions">
+
+                <button
+                    class="btn btn-primary"
+                    onclick="createExam()"
+                >
+                    채점표 생성
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <div class="card-title">
+                        ${escapeHtml(subject.name)} 시험
+                    </div>
+
+                    <div class="card-description">
+                        저장된 시험을 선택하세요.
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="btn btn-small btn-danger"
+                    onclick="deleteSubject()"
+                >
+                    과목 삭제
+                </button>
+
+            </div>
+
+
+            <div class="exam-list">
+
+                ${
+                    subject.exams.length
+                        ? subject.exams
+                            .map(renderExamListItem)
+                            .join("")
+                        : `
+                            <div style="
+                                padding:35px;
+                                text-align:center;
+                                color:#a1a1aa;
+                                font-size:13px;
+                            ">
+                                아직 생성된 시험이 없습니다.
+                            </div>
+                        `
+                }
+
+            </div>
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   시험 목록 아이템
+========================================================= */
+
+function renderExamListItem(exam) {
+
+    const score =
+        calculateExam(exam);
+
+
+    return `
+
+        <div class="exam-row">
+
+            <div>
+
+                <div class="exam-name">
+                    ${escapeHtml(exam.name)}
+                </div>
+
+                <div class="exam-meta">
+
+                    ${
+                        exam.studentName
+                            ? escapeHtml(exam.studentName) + " · "
+                            : ""
+                    }
+
+                    ${exam.objective.length}개 객관식 ·
+                    ${exam.subjective.length}개 서논술형
+
+                    ·
+
+                    ${score.totalScore}/${score.totalPossible}점
+
+                </div>
+
+            </div>
+
+
+            <div class="exam-actions">
+
+                <button
+                    class="btn btn-small"
+                    onclick="openExam('${exam.id}')"
+                >
+                    열기
+                </button>
+
+                <button
+                    class="btn btn-small btn-danger"
+                    onclick="deleteExam('${exam.id}')"
+                >
+                    삭제
+                </button>
+
+            </div>
+
+        </div>
+    `;
 }
 
 
@@ -774,74 +1825,144 @@ function renderExamList(subject) {
 
 function createExam() {
 
-    const subject = getCurrentSubject();
+    const subject =
+        getCurrentSubject();
+
+    if (!subject) {
+        return;
+    }
+
 
     const name =
-        document.getElementById("examName").value.trim()
-        || "새 시험";
+        document
+            .getElementById("examName")
+            .value
+            .trim() ||
+        "새 시험";
+
 
     const objectiveCount =
         Math.max(
             0,
             parseInt(
-                document.getElementById("objectiveCount").value
+                document
+                    .getElementById(
+                        "objectiveCount"
+                    )
+                    .value
             ) || 0
         );
+
 
     const subjectiveCount =
         Math.max(
             0,
             parseInt(
-                document.getElementById("subjectiveCount").value
+                document
+                    .getElementById(
+                        "subjectiveCount"
+                    )
+                    .value
             ) || 0
         );
 
-    const studentName =
-        document.getElementById("studentName").value.trim();
 
-    if (objectiveCount + subjectiveCount === 0) {
-        alert("문항 수를 하나 이상 입력해주세요.");
+    const studentName =
+        document
+            .getElementById("studentName")
+            .value
+            .trim();
+
+
+    if (
+        objectiveCount +
+        subjectiveCount ===
+        0
+    ) {
+
+        showToast(
+            "문항 수를 하나 이상 입력해주세요."
+        );
+
         return;
     }
 
+
     const exam = {
+
         id: createId(),
-        name: name,
-        studentName: studentName,
-        createdAt: new Date().toISOString(),
+
+        name,
+
+        studentName,
+
+        createdAt:
+            new Date().toISOString(),
 
         objective: [],
+
         subjective: []
+
     };
 
-    for (let i = 1; i <= objectiveCount; i++) {
+
+    for (
+        let i = 1;
+        i <= objectiveCount;
+        i++
+    ) {
 
         exam.objective.push({
+
             number: i,
+
             answer: "",
+
             studentAnswer: "",
+
             points: 0
+
         });
 
     }
 
-    for (let i = 1; i <= subjectiveCount; i++) {
+
+    for (
+        let i = 1;
+        i <= subjectiveCount;
+        i++
+    ) {
 
         exam.subjective.push({
-            number: objectiveCount + i,
+
+            number:
+                objectiveCount + i,
+
             result: "",
+
             points: 0,
+
             score: 0
+
         });
 
     }
+
 
     subject.exams.push(exam);
 
-    currentExamId = exam.id;
+    currentExamId =
+        exam.id;
+
 
     saveData();
+
+    renderSubjects();
     renderContent();
+
+    showToast(
+        "채점표를 생성했습니다."
+    );
 }
 
 
@@ -863,70 +1984,154 @@ function openExam(id) {
 
 function deleteExam(id) {
 
-    if (!confirm("이 시험을 삭제할까요?")) {
+    const subject =
+        getCurrentSubject();
+
+    if (!subject) {
         return;
     }
 
-    const subject = getCurrentSubject();
+
+    const exam =
+        subject.exams.find(
+            item =>
+                item.id === id
+        );
+
+
+    if (!exam) {
+        return;
+    }
+
+
+    if (
+        !confirm(
+            `"${exam.name}" 시험을 삭제할까요?`
+        )
+    ) {
+        return;
+    }
+
 
     subject.exams =
-        subject.exams.filter(exam => exam.id !== id);
+        subject.exams.filter(
+            item =>
+                item.id !== id
+        );
+
 
     currentExamId = null;
 
     saveData();
+
+    renderSubjects();
     renderContent();
+
+    showToast(
+        "시험을 삭제했습니다."
+    );
 }
 
 
 /* =========================================================
-   채점표
+   시험 화면
 ========================================================= */
 
-function renderExam(exam) {
+function renderExam(
+    exam,
+    content
+) {
 
-    const content = document.getElementById("content");
+    const score =
+        calculateExam(exam);
 
-    const score = calculateExam(exam);
+
+    const progress =
+        score.totalPossible > 0
+            ? Math.min(
+                100,
+                Math.round(
+                    score.totalScore /
+                    score.totalPossible *
+                    100
+                )
+            )
+            : 0;
+
 
     content.innerHTML = `
 
         <div class="card">
 
-            <div style="
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                gap:10px;
-                flex-wrap:wrap;
-            ">
+            <div class="exam-header">
 
                 <div>
-                    <div style="font-size:22px;font-weight:800;">
+
+                    <div class="exam-title">
                         ${escapeHtml(exam.name)}
                     </div>
 
-                    <div style="color:#777;margin-top:5px;">
-                        ${exam.studentName
-                            ? "학생: " + escapeHtml(exam.studentName)
-                            : ""}
+                    <div class="exam-info">
+
+                        ${
+                            exam.studentName
+                                ? `학생: ${escapeHtml(exam.studentName)}`
+                                : "학생명 미입력"
+                        }
+
+                        ·
+
+                        자동 저장됨
+
                     </div>
+
                 </div>
 
-                <div style="display:flex;gap:8px;">
+
+                <div class="exam-header-actions">
+
                     <button
-                        class="btn"
+                        class="btn btn-small"
                         onclick="backToExamList()"
                     >
                         시험 목록
                     </button>
 
                     <button
-                        class="btn primary"
+                        class="btn btn-small"
                         onclick="exportCurrentSubjectExcel()"
                     >
-                        이 과목 Excel
+                        Excel
                     </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="progress-area">
+
+                <div class="progress-header">
+
+                    <span>
+                        현재 점수
+                    </span>
+
+                    <strong>
+                        ${score.totalScore} /
+                        ${score.totalPossible}
+                        (${progress}%)
+                    </strong>
+
+                </div>
+
+                <div class="progress">
+
+                    <div
+                        class="progress-bar"
+                        style="width:${progress}%"
+                    ></div>
+
                 </div>
 
             </div>
@@ -934,37 +2139,73 @@ function renderExam(exam) {
         </div>
 
 
-        <div class="stats">
+        <div class="stats-grid">
 
-            <div class="stat">
-                <div class="stat-label">객관식</div>
-                <div class="stat-value">
-                    ${score.objectiveScore} /
-                    ${score.objectivePossible}
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    객관식
                 </div>
+
+                <div class="stat-value">
+                    ${score.objectiveScore}
+                </div>
+
+                <div class="stat-sub">
+                    / ${score.objectivePossible}점
+                </div>
+
             </div>
 
-            <div class="stat">
-                <div class="stat-label">서·논술형</div>
-                <div class="stat-value">
-                    ${score.subjectiveScore} /
-                    ${score.subjectivePossible}
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    서·논술형
                 </div>
+
+                <div class="stat-value">
+                    ${score.subjectiveScore}
+                </div>
+
+                <div class="stat-sub">
+                    / ${score.subjectivePossible}점
+                </div>
+
             </div>
 
-            <div class="stat">
-                <div class="stat-label">총점</div>
-                <div class="stat-value">
-                    ${score.totalScore} /
-                    ${score.totalPossible}
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    총점
                 </div>
+
+                <div class="stat-value">
+                    ${score.totalScore}
+                </div>
+
+                <div class="stat-sub">
+                    / ${score.totalPossible}점
+                </div>
+
             </div>
 
-            <div class="stat">
-                <div class="stat-label">획득률</div>
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    획득률
+                </div>
+
                 <div class="stat-value">
                     ${score.percent}%
                 </div>
+
+                <div class="stat-sub">
+                    자동 계산
+                </div>
+
             </div>
 
         </div>
@@ -972,14 +2213,35 @@ function renderExam(exam) {
 
         <div class="card">
 
-            <div class="card-title">
-                객관식
+            <div class="card-header">
+
+                <div>
+
+                    <div class="card-title">
+                        객관식
+                    </div>
+
+                    <div class="card-description">
+                        정답과 학생 정답이 같으면 자동으로 득점됩니다.
+                    </div>
+
+                </div>
+
             </div>
+
 
             ${
                 exam.objective.length
                     ? renderObjectiveTable(exam)
-                    : `<div style="color:#888;">객관식 문항이 없습니다.</div>`
+                    : `
+                        <div style="
+                            text-align:center;
+                            padding:30px;
+                            color:#a1a1aa;
+                        ">
+                            객관식 문항이 없습니다.
+                        </div>
+                    `
             }
 
         </div>
@@ -987,14 +2249,35 @@ function renderExam(exam) {
 
         <div class="card">
 
-            <div class="card-title">
-                서·논술형
+            <div class="card-header">
+
+                <div>
+
+                    <div class="card-title">
+                        서·논술형
+                    </div>
+
+                    <div class="card-description">
+                        정오 여부와 실제 득점을 직접 입력하세요.
+                    </div>
+
+                </div>
+
             </div>
+
 
             ${
                 exam.subjective.length
                     ? renderSubjectiveTable(exam)
-                    : `<div style="color:#888;">서·논술형 문항이 없습니다.</div>`
+                    : `
+                        <div style="
+                            text-align:center;
+                            padding:30px;
+                            color:#a1a1aa;
+                        ">
+                            서·논술형 문항이 없습니다.
+                        </div>
+                    `
             }
 
         </div>
@@ -1009,97 +2292,204 @@ function renderExam(exam) {
 function renderObjectiveTable(exam) {
 
     return `
+
         <div class="table-wrap">
 
             <table class="score-table">
 
                 <thead>
+
                     <tr>
-                        <th>문항</th>
-                        <th>정답</th>
-                        <th>학생 정답</th>
-                        <th>배점</th>
-                        <th>정오</th>
-                        <th>득점</th>
+                        <th class="question-number">
+                            문항
+                        </th>
+
+                        <th>
+                            정답
+                        </th>
+
+                        <th>
+                            학생 정답
+                        </th>
+
+                        <th>
+                            배점
+                        </th>
+
+                        <th>
+                            정오
+                        </th>
+
+                        <th>
+                            득점
+                        </th>
                     </tr>
+
                 </thead>
+
 
                 <tbody>
 
-                ${exam.objective.map((q, index) => {
-
-                    const answer =
-                        normalizeAnswer(q.answer);
-
-                    const student =
-                        normalizeAnswer(q.studentAnswer);
-
-                    const hasBoth =
-                        answer !== "" && student !== "";
-
-                    const correct =
-                        hasBoth && answer === student;
-
-                    const earned =
-                        correct
-                            ? Number(q.points) || 0
-                            : 0;
-
-                    return `
-                        <tr>
-
-                            <td>${q.number}</td>
-
-                            <td>
-                                <input
-                                    value="${escapeAttr(q.answer)}"
-                                    placeholder="①"
-                                    onchange="updateObjective(${index}, 'answer', this.value)"
-                                >
-                            </td>
-
-                            <td>
-                                <input
-                                    value="${escapeAttr(q.studentAnswer)}"
-                                    placeholder="①"
-                                    onchange="updateObjective(${index}, 'studentAnswer', this.value)"
-                                >
-                            </td>
-
-                            <td>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    value="${q.points}"
-                                    onchange="updateObjective(${index}, 'points', this.value)"
-                                >
-                            </td>
-
-                            <td class="${correct ? "correct" : "wrong"}">
-                                ${
-                                    !hasBoth
-                                        ? "-"
-                                        : correct
-                                            ? "O"
-                                            : "X"
-                                }
-                            </td>
-
-                            <td>
-                                <strong>${earned}</strong>
-                            </td>
-
-                        </tr>
-                    `;
-
-                }).join("")}
+                    ${
+                        exam.objective
+                            .map(
+                                (q, index) =>
+                                    renderObjectiveRow(
+                                        q,
+                                        index
+                                    )
+                            )
+                            .join("")
+                    }
 
                 </tbody>
 
             </table>
 
         </div>
+    `;
+}
+
+
+function renderObjectiveRow(
+    q,
+    index
+) {
+
+    const answer =
+        normalizeAnswer(q.answer);
+
+    const student =
+        normalizeAnswer(q.studentAnswer);
+
+
+    const hasBoth =
+        answer !== "" &&
+        student !== "";
+
+
+    const correct =
+        hasBoth &&
+        answer === student;
+
+
+    const earned =
+        correct
+            ? Number(q.points) || 0
+            : 0;
+
+
+    let badgeClass =
+        "result-empty";
+
+    let badgeText =
+        "-";
+
+
+    if (hasBoth) {
+
+        if (correct) {
+
+            badgeClass =
+                "result-correct";
+
+            badgeText =
+                "O";
+
+        } else {
+
+            badgeClass =
+                "result-wrong";
+
+            badgeText =
+                "X";
+        }
+    }
+
+
+    return `
+
+        <tr>
+
+            <td class="question-number">
+                ${q.number}
+            </td>
+
+
+            <td>
+
+                <input
+                    class="table-input"
+                    value="${escapeAttr(q.answer)}"
+                    placeholder="③"
+                    onchange="
+                        updateObjective(
+                            ${index},
+                            'answer',
+                            this.value
+                        )
+                    "
+                >
+
+            </td>
+
+
+            <td>
+
+                <input
+                    class="table-input"
+                    value="${escapeAttr(q.studentAnswer)}"
+                    placeholder="③"
+                    onchange="
+                        updateObjective(
+                            ${index},
+                            'studentAnswer',
+                            this.value
+                        )
+                    "
+                >
+
+            </td>
+
+
+            <td>
+
+                <input
+                    class="table-input"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="${q.points}"
+                    onchange="
+                        updateObjective(
+                            ${index},
+                            'points',
+                            this.value
+                        )
+                    "
+                >
+
+            </td>
+
+
+            <td>
+
+                <span
+                    class="result-badge ${badgeClass}"
+                >
+                    ${badgeText}
+                </span>
+
+            </td>
+
+
+            <td>
+                <strong>
+                    ${formatNumber(earned)}
+                </strong>
+            </td>
+
+        </tr>
     `;
 }
 
@@ -1111,78 +2501,49 @@ function renderObjectiveTable(exam) {
 function renderSubjectiveTable(exam) {
 
     return `
+
         <div class="table-wrap">
 
             <table class="score-table">
 
                 <thead>
+
                     <tr>
-                        <th>문항</th>
-                        <th>정오 여부</th>
-                        <th>배점</th>
-                        <th>득점</th>
+
+                        <th class="question-number">
+                            문항
+                        </th>
+
+                        <th>
+                            정오 여부
+                        </th>
+
+                        <th>
+                            배점
+                        </th>
+
+                        <th>
+                            득점
+                        </th>
+
                     </tr>
+
                 </thead>
+
 
                 <tbody>
 
-                ${exam.subjective.map((q, index) => {
-
-                    return `
-                        <tr>
-
-                            <td>${q.number}</td>
-
-                            <td>
-                                <select
-                                    onchange="updateSubjective(${index}, 'result', this.value)"
-                                >
-                                    <option value=""
-                                        ${q.result === "" ? "selected" : ""}>
-                                        미채점
-                                    </option>
-
-                                    <option value="O"
-                                        ${q.result === "O" ? "selected" : ""}>
-                                        O
-                                    </option>
-
-                                    <option value="X"
-                                        ${q.result === "X" ? "selected" : ""}>
-                                        X
-                                    </option>
-
-                                    <option value="부분정답"
-                                        ${q.result === "부분정답" ? "selected" : ""}>
-                                        부분정답
-                                    </option>
-                                </select>
-                            </td>
-
-                            <td>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    value="${q.points}"
-                                    onchange="updateSubjective(${index}, 'points', this.value)"
-                                >
-                            </td>
-
-                            <td>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    value="${q.score}"
-                                    onchange="updateSubjective(${index}, 'score', this.value)"
-                                >
-                            </td>
-
-                        </tr>
-                    `;
-
-                }).join("")}
+                    ${
+                        exam.subjective
+                            .map(
+                                (q, index) =>
+                                    renderSubjectiveRow(
+                                        q,
+                                        index
+                                    )
+                            )
+                            .join("")
+                    }
 
                 </tbody>
 
@@ -1193,52 +2554,197 @@ function renderSubjectiveTable(exam) {
 }
 
 
+function renderSubjectiveRow(
+    q,
+    index
+) {
+
+    return `
+
+        <tr>
+
+            <td class="question-number">
+                ${q.number}
+            </td>
+
+
+            <td>
+
+                <select
+                    class="table-select"
+                    onchange="
+                        updateSubjective(
+                            ${index},
+                            'result',
+                            this.value
+                        )
+                    "
+                >
+
+                    <option
+                        value=""
+                        ${q.result === "" ? "selected" : ""}
+                    >
+                        미채점
+                    </option>
+
+                    <option
+                        value="O"
+                        ${q.result === "O" ? "selected" : ""}
+                    >
+                        O
+                    </option>
+
+                    <option
+                        value="X"
+                        ${q.result === "X" ? "selected" : ""}
+                    >
+                        X
+                    </option>
+
+                    <option
+                        value="부분정답"
+                        ${q.result === "부분정답" ? "selected" : ""}
+                    >
+                        부분정답
+                    </option>
+
+                </select>
+
+            </td>
+
+
+            <td>
+
+                <input
+                    class="table-input"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="${q.points}"
+                    onchange="
+                        updateSubjective(
+                            ${index},
+                            'points',
+                            this.value
+                        )
+                    "
+                >
+
+            </td>
+
+
+            <td>
+
+                <input
+                    class="table-input"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value="${q.score}"
+                    onchange="
+                        updateSubjective(
+                            ${index},
+                            'score',
+                            this.value
+                        )
+                    "
+                >
+
+            </td>
+
+        </tr>
+    `;
+}
+
+
 /* =========================================================
-   객관식 데이터 변경
+   데이터 수정
 ========================================================= */
 
-function updateObjective(index, field, value) {
+function updateObjective(
+    index,
+    field,
+    value
+) {
 
-    const exam = getCurrentExam();
+    const exam =
+        getCurrentExam();
 
-    if (!exam) return;
+    if (!exam) {
+        return;
+    }
+
 
     if (field === "points") {
-        value = Math.max(0, Number(value) || 0);
+
+        value =
+            Math.max(
+                0,
+                Number(value) || 0
+            );
     }
 
-    exam.objective[index][field] = value;
+
+    exam.objective[index][field] =
+        value;
+
 
     saveData();
 
-    renderExam(exam);
+    renderExam(
+        exam,
+        document.getElementById(
+            "content"
+        )
+    );
+}
+
+
+function updateSubjective(
+    index,
+    field,
+    value
+) {
+
+    const exam =
+        getCurrentExam();
+
+    if (!exam) {
+        return;
+    }
+
+
+    if (
+        field === "points" ||
+        field === "score"
+    ) {
+
+        value =
+            Math.max(
+                0,
+                Number(value) || 0
+            );
+    }
+
+
+    exam.subjective[index][field] =
+        value;
+
+
+    saveData();
+
+    renderExam(
+        exam,
+        document.getElementById(
+            "content"
+        )
+    );
 }
 
 
 /* =========================================================
-   서논술형 데이터 변경
-========================================================= */
-
-function updateSubjective(index, field, value) {
-
-    const exam = getCurrentExam();
-
-    if (!exam) return;
-
-    if (field === "points" || field === "score") {
-        value = Math.max(0, Number(value) || 0);
-    }
-
-    exam.subjective[index][field] = value;
-
-    saveData();
-
-    renderExam(exam);
-}
-
-
-/* =========================================================
-   점수 계산
+   계산
 ========================================================= */
 
 function calculateExam(exam) {
@@ -1246,60 +2752,89 @@ function calculateExam(exam) {
     let objectiveScore = 0;
     let objectivePossible = 0;
 
+
     exam.objective.forEach(q => {
 
         const answer =
-            normalizeAnswer(q.answer);
+            normalizeAnswer(
+                q.answer
+            );
 
         const student =
-            normalizeAnswer(q.studentAnswer);
+            normalizeAnswer(
+                q.studentAnswer
+            );
 
         const points =
             Number(q.points) || 0;
 
-        objectivePossible += points;
+
+        objectivePossible +=
+            points;
+
 
         if (
             answer !== "" &&
             student !== "" &&
             answer === student
         ) {
-            objectiveScore += points;
+
+            objectiveScore +=
+                points;
         }
+
     });
 
 
     let subjectiveScore = 0;
     let subjectivePossible = 0;
 
+
     exam.subjective.forEach(q => {
 
-        subjectivePossible += Number(q.points) || 0;
-        subjectiveScore += Number(q.score) || 0;
+        subjectivePossible +=
+            Number(q.points) || 0;
+
+        subjectiveScore +=
+            Number(q.score) || 0;
 
     });
 
 
     const totalScore =
-        objectiveScore + subjectiveScore;
+        objectiveScore +
+        subjectiveScore;
+
 
     const totalPossible =
-        objectivePossible + subjectivePossible;
+        objectivePossible +
+        subjectivePossible;
+
 
     const percent =
         totalPossible > 0
             ? Math.round(
-                (totalScore / totalPossible) * 10000
+                totalScore /
+                totalPossible *
+                10000
             ) / 100
             : 0;
 
+
     return {
+
         objectiveScore,
+
         objectivePossible,
+
         subjectiveScore,
+
         subjectivePossible,
+
         totalScore,
+
         totalPossible,
+
         percent
     };
 }
@@ -1314,17 +2849,17 @@ function normalizeAnswer(value) {
     return String(value || "")
         .trim()
         .replace(/\s+/g, "")
-        .replace(/[①]/g, "1")
-        .replace(/[②]/g, "2")
-        .replace(/[③]/g, "3")
-        .replace(/[④]/g, "4")
-        .replace(/[⑤]/g, "5")
+        .replace(/①/g, "1")
+        .replace(/②/g, "2")
+        .replace(/③/g, "3")
+        .replace(/④/g, "4")
+        .replace(/⑤/g, "5")
         .toLowerCase();
 }
 
 
 /* =========================================================
-   시험 목록으로
+   시험 목록 돌아가기
 ========================================================= */
 
 function backToExamList() {
@@ -1343,16 +2878,24 @@ function exportBackup() {
 
     saveData();
 
-    const json = JSON.stringify(
-        data,
-        null,
-        2
-    );
+
+    const json =
+        JSON.stringify(
+            data,
+            null,
+            2
+        );
+
 
     downloadBlob(
         json,
         "가채점_백업.json",
         "application/json;charset=utf-8"
+    );
+
+
+    showToast(
+        "데이터를 백업했습니다."
     );
 }
 
@@ -1366,472 +2909,1188 @@ function importBackup(event) {
     const file =
         event.target.files[0];
 
-    if (!file) return;
+    if (!file) {
+        return;
+    }
 
-    const reader = new FileReader();
 
-    reader.onload = function(e) {
+    const reader =
+        new FileReader();
 
-        try {
 
-            const imported =
-                JSON.parse(e.target.result);
+    reader.onload =
+        function(e) {
 
-            if (
-                !imported ||
-                !Array.isArray(imported.subjects)
-            ) {
-                throw new Error("잘못된 파일");
-            }
+            try {
 
-            const overwrite =
-                confirm(
-                    "현재 데이터를 가져온 데이터로 교체할까요?\n\n" +
-                    "취소를 누르면 현재 데이터에 과목을 추가합니다."
+                const imported =
+                    JSON.parse(
+                        e.target.result
+                    );
+
+
+                if (
+                    !imported ||
+                    !Array.isArray(
+                        imported.subjects
+                    )
+                ) {
+
+                    throw new Error(
+                        "Invalid backup"
+                    );
+                }
+
+
+                const replace =
+                    confirm(
+                        "현재 데이터를 모두 교체할까요?\n\n" +
+                        "취소를 누르면 현재 데이터에 추가됩니다."
+                    );
+
+
+                if (replace) {
+
+                    data =
+                        imported;
+
+                } else {
+
+                    imported.subjects
+                        .forEach(
+                            importedSubject => {
+
+                                const existing =
+                                    data.subjects.find(
+                                        subject =>
+                                            subject.name ===
+                                            importedSubject.name
+                                    );
+
+
+                                if (existing) {
+
+                                    existing.exams.push(
+                                        ...(importedSubject.exams || [])
+                                    );
+
+                                } else {
+
+                                    data.subjects.push(
+                                        importedSubject
+                                    );
+                                }
+                            }
+                        );
+                }
+
+
+                saveData();
+
+                currentSubjectId = null;
+                currentExamId = null;
+
+                renderSubjects();
+                renderContent();
+
+                showToast(
+                    "데이터를 복원했습니다."
                 );
 
-            if (overwrite) {
+            } catch (error) {
 
-                data = imported;
+                console.error(error);
 
-            } else {
-
-                imported.subjects.forEach(subject => {
-
-                    const existing =
-                        data.subjects.find(
-                            s => s.name === subject.name
-                        );
-
-                    if (existing) {
-
-                        existing.exams.push(
-                            ...(subject.exams || [])
-                        );
-
-                    } else {
-
-                        data.subjects.push(subject);
-
-                    }
-
-                });
+                alert(
+                    "올바른 가채점 백업 파일이 아닙니다."
+                );
             }
 
-            saveData();
 
-            currentSubjectId = null;
-            currentExamId = null;
+            event.target.value = "";
+        };
 
-            renderSubjects();
-            renderContent();
-
-            alert("데이터를 가져왔습니다.");
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "가져오기에 실패했습니다.\n" +
-                "올바른 가채점 백업 파일인지 확인해주세요."
-            );
-        }
-
-        event.target.value = "";
-    };
 
     reader.readAsText(file);
 }
 
 
 /* =========================================================
-   Excel 전체 내보내기
+   Excel 공통 데이터 생성
 ========================================================= */
 
-function exportExcel() {
+function buildSubjectRows(subject) {
 
-    if (!window.XLSX) {
-        alert(
-            "Excel 라이브러리를 불러오지 못했습니다.\n" +
-            "인터넷 연결을 확인해주세요."
-        );
-        return;
-    }
+    const rows = [];
 
-    if (data.subjects.length === 0) {
-        alert("내보낼 과목이 없습니다.");
-        return;
-    }
 
-    const workbook =
-        XLSX.utils.book_new();
-
-    data.subjects.forEach(subject => {
-
-        if (!subject.exams.length) {
-
-            const ws =
-                XLSX.utils.aoa_to_sheet([
-                    [subject.name],
-                    [],
-                    ["시험이 없습니다."]
-                ]);
-
-            setupWorksheet(ws);
-
-            XLSX.utils.book_append_sheet(
-                workbook,
-                ws,
-                safeSheetName(subject.name)
-            );
-
-            return;
-        }
-
-        /*
-         * 한 과목에 여러 시험이 있을 경우
-         * 해당 과목 시트 안에 시험들을 이어서 표시
-         */
-        const rows = [];
-
-        subject.exams.forEach((exam, examIndex) => {
+    subject.exams.forEach(
+        (exam, examIndex) => {
 
             const score =
                 calculateExam(exam);
 
-            rows.push([
-                subject.name +
-                " - " +
-                exam.name
-            ]);
 
-            rows.push([
-                "학생명",
-                exam.studentName || ""
-            ]);
+            rows.push({
+                type: "title",
+                values: [
+                    `${subject.name} · ${exam.name}`
+                ]
+            });
 
-            rows.push([]);
 
-            rows.push([
-                "문항",
-                "유형",
-                "정답",
-                "학생 정답",
-                "정오",
-                "배점",
-                "득점"
-            ]);
+            rows.push({
+                type: "info",
+                values: [
+                    "학생명",
+                    exam.studentName || "미입력",
+                    "",
+                    "작성일",
+                    formatDate(exam.createdAt)
+                ]
+            });
+
+
+            rows.push({
+                type: "blank",
+                values: []
+            });
+
+
+            rows.push({
+                type: "section",
+                values: [
+                    "객관식"
+                ]
+            });
+
+
+            rows.push({
+                type: "header",
+                values: [
+                    "문항",
+                    "유형",
+                    "정답",
+                    "학생 정답",
+                    "정오",
+                    "배점",
+                    "득점"
+                ]
+            });
+
 
             exam.objective.forEach(q => {
 
                 const answer =
-                    normalizeAnswer(q.answer);
+                    normalizeAnswer(
+                        q.answer
+                    );
 
                 const student =
-                    normalizeAnswer(q.studentAnswer);
+                    normalizeAnswer(
+                        q.studentAnswer
+                    );
+
 
                 const answered =
                     answer !== "" &&
                     student !== "";
 
+
                 const correct =
                     answered &&
                     answer === student;
 
-                rows.push([
-                    q.number,
-                    "객관식",
-                    q.answer,
-                    q.studentAnswer,
-                    answered
-                        ? correct ? "O" : "X"
-                        : "",
-                    Number(q.points) || 0,
-                    correct
-                        ? Number(q.points) || 0
-                        : 0
-                ]);
+
+                rows.push({
+                    type: correct
+                        ? "correct"
+                        : answered
+                            ? "wrong"
+                            : "normal",
+
+                    values: [
+                        q.number,
+                        "객관식",
+                        q.answer || "",
+                        q.studentAnswer || "",
+                        answered
+                            ? correct
+                                ? "O"
+                                : "X"
+                            : "",
+                        Number(q.points) || 0,
+                        correct
+                            ? Number(q.points) || 0
+                            : 0
+                    ]
+                });
 
             });
 
-            exam.subjective.forEach(q => {
 
-                rows.push([
-                    q.number,
+            if (exam.subjective.length) {
+
+                rows.push({
+                    type: "blank",
+                    values: []
+                });
+
+
+                rows.push({
+                    type: "section",
+                    values: [
+                        "서·논술형"
+                    ]
+                });
+
+
+                rows.push({
+                    type: "header",
+                    values: [
+                        "문항",
+                        "유형",
+                        "정답",
+                        "학생 정답",
+                        "정오",
+                        "배점",
+                        "득점"
+                    ]
+                });
+
+
+                exam.subjective.forEach(q => {
+
+                    rows.push({
+                        type:
+                            q.result === "O"
+                                ? "correct"
+                                : q.result === "X"
+                                    ? "wrong"
+                                    : q.result === "부분정답"
+                                        ? "partial"
+                                        : "normal",
+
+                        values: [
+                            q.number,
+                            "서·논술형",
+                            "",
+                            "",
+                            q.result || "",
+                            Number(q.points) || 0,
+                            Number(q.score) || 0
+                        ]
+                    });
+
+                });
+            }
+
+
+            rows.push({
+                type: "blank",
+                values: []
+            });
+
+
+            rows.push({
+                type: "summary",
+                values: [
+                    "객관식",
+                    "",
+                    "",
+                    "",
+                    "",
+                    score.objectivePossible,
+                    score.objectiveScore
+                ]
+            });
+
+
+            rows.push({
+                type: "summary",
+                values: [
                     "서·논술형",
                     "",
                     "",
-                    q.result,
-                    Number(q.points) || 0,
-                    Number(q.score) || 0
-                ]);
-
+                    "",
+                    "",
+                    score.subjectivePossible,
+                    score.subjectiveScore
+                ]
             });
 
-            rows.push([]);
 
-            rows.push([
-                "객관식 점수",
-                score.objectiveScore,
-                "/",
-                score.objectivePossible
-            ]);
+            rows.push({
+                type: "total",
+                values: [
+                    "총점",
+                    "",
+                    "",
+                    "",
+                    "",
+                    score.totalPossible,
+                    score.totalScore
+                ]
+            });
 
-            rows.push([
-                "서·논술형 점수",
-                score.subjectiveScore,
-                "/",
-                score.subjectivePossible
-            ]);
 
-            rows.push([
-                "총점",
-                score.totalScore,
-                "/",
-                score.totalPossible
-            ]);
+            rows.push({
+                type: "percent",
+                values: [
+                    "획득률",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    `${score.percent}%`
+                ]
+            });
 
-            rows.push([
-                "획득률",
-                score.percent + "%"
-            ]);
 
-            if (examIndex !== subject.exams.length - 1) {
-                rows.push([]);
-                rows.push([]);
+            if (
+                examIndex <
+                subject.exams.length - 1
+            ) {
+
+                rows.push({
+                    type: "separator",
+                    values: []
+                });
+
+                rows.push({
+                    type: "separator",
+                    values: []
+                });
             }
 
-        });
+        }
+    );
 
-        const ws =
-            XLSX.utils.aoa_to_sheet(rows);
 
-        styleWorksheet(ws);
+    return rows;
+}
 
-        XLSX.utils.book_append_sheet(
-            workbook,
-            ws,
-            safeSheetName(subject.name)
+
+/* =========================================================
+   Excel 내보내기
+========================================================= */
+
+function exportExcel() {
+
+    if (
+        typeof XLSX ===
+        "undefined"
+    ) {
+
+        alert(
+            "Excel 라이브러리를 불러오지 못했습니다.\n" +
+            "인터넷 연결을 확인해주세요."
         );
-    });
+
+        return;
+    }
 
 
-    /*
-     * Excel 인쇄 설정
-     */
-    workbook.SheetNames.forEach(sheetName => {
+    if (
+        data.subjects.length === 0
+    ) {
 
-        const ws =
-            workbook.Sheets[sheetName];
+        showToast(
+            "내보낼 과목이 없습니다."
+        );
 
-        setupWorksheet(ws);
+        return;
+    }
 
-    });
+
+    const workbook =
+        XLSX.utils.book_new();
+
+
+    data.subjects.forEach(
+        subject => {
+
+            const rows =
+                buildSubjectRows(
+                    subject
+                );
+
+
+            const worksheet =
+                createStyledWorksheet(
+                    rows
+                );
+
+
+            XLSX.utils.book_append_sheet(
+                workbook,
+                worksheet,
+                safeSheetName(
+                    subject.name
+                )
+            );
+        }
+    );
 
 
     XLSX.writeFile(
         workbook,
         "가채점_결과.xlsx"
     );
+
+
+    showToast(
+        "Excel 파일을 생성했습니다."
+    );
 }
 
 
 /* =========================================================
-   현재 과목만 Excel
+   현재 과목 Excel
 ========================================================= */
 
 function exportCurrentSubjectExcel() {
 
-    if (!window.XLSX) {
-        alert("Excel 라이브러리를 불러오지 못했습니다.");
+    if (
+        typeof XLSX ===
+        "undefined"
+    ) {
+
+        alert(
+            "Excel 라이브러리를 불러오지 못했습니다."
+        );
+
         return;
     }
+
 
     const subject =
         getCurrentSubject();
 
-    if (!subject || !subject.exams.length) {
-        alert("내보낼 시험이 없습니다.");
+
+    if (
+        !subject ||
+        !subject.exams.length
+    ) {
+
+        showToast(
+            "내보낼 시험이 없습니다."
+        );
+
         return;
     }
+
 
     const workbook =
         XLSX.utils.book_new();
 
-    const rows = [];
 
-    subject.exams.forEach((exam, examIndex) => {
+    const rows =
+        buildSubjectRows(
+            subject
+        );
 
-        const score =
-            calculateExam(exam);
 
-        rows.push([
-            subject.name +
-            " - " +
-            exam.name
-        ]);
+    const worksheet =
+        createStyledWorksheet(
+            rows
+        );
 
-        rows.push([
-            "학생명",
-            exam.studentName || ""
-        ]);
-
-        rows.push([]);
-
-        rows.push([
-            "문항",
-            "유형",
-            "정답",
-            "학생 정답",
-            "정오",
-            "배점",
-            "득점"
-        ]);
-
-        exam.objective.forEach(q => {
-
-            const answer =
-                normalizeAnswer(q.answer);
-
-            const student =
-                normalizeAnswer(q.studentAnswer);
-
-            const correct =
-                answer !== "" &&
-                student !== "" &&
-                answer === student;
-
-            rows.push([
-                q.number,
-                "객관식",
-                q.answer,
-                q.studentAnswer,
-                answer && student
-                    ? correct ? "O" : "X"
-                    : "",
-                Number(q.points) || 0,
-                correct
-                    ? Number(q.points) || 0
-                    : 0
-            ]);
-        });
-
-        exam.subjective.forEach(q => {
-
-            rows.push([
-                q.number,
-                "서·논술형",
-                "",
-                "",
-                q.result,
-                Number(q.points) || 0,
-                Number(q.score) || 0
-            ]);
-        });
-
-        rows.push([]);
-
-        rows.push([
-            "총점",
-            score.totalScore,
-            "/",
-            score.totalPossible
-        ]);
-
-        rows.push([
-            "획득률",
-            score.percent + "%"
-        ]);
-
-        if (examIndex < subject.exams.length - 1) {
-            rows.push([]);
-            rows.push([]);
-        }
-    });
-
-    const ws =
-        XLSX.utils.aoa_to_sheet(rows);
-
-    styleWorksheet(ws);
-    setupWorksheet(ws);
 
     XLSX.utils.book_append_sheet(
         workbook,
-        ws,
-        safeSheetName(subject.name)
+        worksheet,
+        safeSheetName(
+            subject.name
+        )
     );
+
 
     XLSX.writeFile(
         workbook,
-        subject.name + "_가채점.xlsx"
+        `${subject.name}_가채점.xlsx`
+    );
+
+
+    showToast(
+        "Excel 파일을 생성했습니다."
     );
 }
 
 
 /* =========================================================
-   Excel 스타일
+   Excel Worksheet 생성
 ========================================================= */
 
-function styleWorksheet(ws) {
+function createStyledWorksheet(rows) {
 
-    ws["!cols"] = [
-        { wch: 8 },
-        { wch: 14 },
-        { wch: 14 },
-        { wch: 14 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 }
-    ];
+    const values =
+        rows.map(
+            row =>
+                row.values
+        );
+
+
+    const worksheet =
+        XLSX.utils.aoa_to_sheet(
+            values
+        );
+
 
     /*
-     * SheetJS Community Edition에서는
-     * 셀 스타일 지원이 제한될 수 있음.
-     * 기본적인 열 너비와 인쇄 설정은 적용.
+     * 열 너비
      */
-}
+    worksheet["!cols"] = [
+
+        { wch: 8 },   // 문항
+
+        { wch: 14 },  // 유형
+
+        { wch: 14 },  // 정답
+
+        { wch: 14 },  // 학생 정답
+
+        { wch: 10 },  // 정오
+
+        { wch: 10 },  // 배점
+
+        { wch: 10 }   // 득점
+    ];
 
 
-/* =========================================================
-   Excel 페이지 설정
-========================================================= */
+    /*
+     * 기본 폰트 / 정렬
+     */
+    const range =
+        XLSX.utils.decode_range(
+            worksheet["!ref"]
+        );
 
-function setupWorksheet(ws) {
 
-    ws["!pageSetup"] = {
+    for (
+        let r = range.s.r;
+        r <= range.e.r;
+        r++
+    ) {
+
+        for (
+            let c = range.s.c;
+            c <= range.e.c;
+            c++
+        ) {
+
+            const address =
+                XLSX.utils.encode_cell({
+                    r,
+                    c
+                });
+
+
+            if (!worksheet[address]) {
+
+                worksheet[address] = {
+                    v: "",
+                    t: "s"
+                };
+            }
+
+
+            worksheet[address].s = {
+
+                font: {
+                    name: "맑은 고딕",
+                    sz: 10,
+                    color: "222222"
+                },
+
+                alignment: {
+                    horizontal: "center",
+                    vertical: "center",
+                    wrapText: true
+                },
+
+                border: {
+                    top: {
+                        style: "thin",
+                        color: {
+                            rgb: "E5E7EB"
+                        }
+                    },
+
+                    bottom: {
+                        style: "thin",
+                        color: {
+                            rgb: "E5E7EB"
+                        }
+                    },
+
+                    left: {
+                        style: "thin",
+                        color: {
+                            rgb: "E5E7EB"
+                        }
+                    },
+
+                    right: {
+                        style: "thin",
+                        color: {
+                            rgb: "E5E7EB"
+                        }
+                    }
+                }
+            };
+        }
+    }
+
+
+    /*
+     * 행별 스타일
+     */
+    rows.forEach(
+        (row, rowIndex) => {
+
+            const excelRow =
+                rowIndex + 1;
+
+
+            const rowCells =
+                values[rowIndex] || [];
+
+
+            switch (row.type) {
+
+                case "title":
+
+                    styleRow(
+                        worksheet,
+                        excelRow,
+                        7,
+                        {
+                            font: {
+                                name: "맑은 고딕",
+                                sz: 16,
+                                bold: true,
+                                color: "FFFFFF"
+                            },
+
+                            fill: {
+                                fgColor: {
+                                    rgb: "4F46E5"
+                                }
+                            },
+
+                            alignment: {
+                                horizontal: "center",
+                                vertical: "center"
+                            }
+                        }
+                    );
+
+                    worksheet["!merges"] =
+                        worksheet["!merges"] || [];
+
+                    worksheet["!merges"].push({
+                        s: {
+                            r: rowIndex,
+                            c: 0
+                        },
+
+                        e: {
+                            r: rowIndex,
+                            c: 6
+                        }
+                    });
+
+                    break;
+
+
+                case "info":
+
+                    styleRow(
+                        worksheet,
+                        excelRow,
+                        7,
+                        {
+                            font: {
+                                name: "맑은 고딕",
+                                sz: 10,
+                                bold: true
+                            },
+
+                            fill: {
+                                fgColor: {
+                                    rgb: "F5F7FF"
+                                }
+                            }
+                        }
+                    );
+
+                    break;
+
+
+                case "section":
+
+                    styleRow(
+                        worksheet,
+                        excelRow,
+                        7,
+                        {
+                            font: {
+                                name: "맑은 고딕",
+                                sz: 11,
+                                bold: true,
+                                color: "3730A3"
+                            },
+
+                            fill: {
+                                fgColor: {
+                                    rgb: "EEF2FF"
+                                }
+                            },
+
+                            alignment: {
+                                horizontal: "left",
+                                vertical: "center"
+                            }
+                        }
+                    );
+
+                    worksheet["!merges"] =
+                        worksheet["!merges"] || [];
+
+                    worksheet["!merges"].push({
+                        s: {
+                            r: rowIndex,
+                            c: 0
+                        },
+
+                        e: {
+                            r: rowIndex,
+                            c: 6
+                        }
+                    });
+
+                    break;
+
+
+                case "header":
+
+                    styleRow(
+                        worksheet,
+                        excelRow,
+                        7,
+                        {
+                            font: {
+                                name: "맑은 고딕",
+                                sz: 10,
+                                bold: true,
+                                color: "FFFFFF"
+                            },
+
+                            fill: {
+                                fgColor: {
+                                    rgb: "52525B"
+                                }
+                            },
+
+                            alignment: {
+                                horizontal: "center",
+                                vertical: "center"
+                            }
+                        }
+                    );
+
+                    break;
+
+
+                case "correct":
+
+                    styleRow(
+                        worksheet,
+                        excelRow,
+                        7,
+                        {
+                            fill: {
+                                fgColor: {
+                                    rgb: "F0FDF4"
+                                }
+                            }
+                        }
+                    );
+
+
+                    styleCell(
+                        worksheet,
+                        excelRow,
+                        4,
+                        {
+                            font: {
+                                bold: true,
+                                color: "15803D"
+                            }
+                        }
+                    );
+
+                    break;
+
+
+                case "wrong":
+
+                    styleRow(
+                        worksheet,
+                        excelRow,
+                        7,
+                        {
+                            fill: {
+                                fgColor: {
+                                    rgb: "FEF2F2"
+                                }
+                            }
+                        }
+                    );
+
+
+                    styleCell(
+                        worksheet,
+                        excelRow,
+                        4,
+                        {
+                            font: {
+                                bold: true,
+                                color: "B91C1C"
+                            }
+                        }
+                    );
+
+                    break;
+
+
+                case "partial":
+
+                    styleRow(
+                        worksheet,
+                        excelRow,
+                        7,
+                        {
+                            fill: {
+                                fgColor: {
+                                    rgb: "FFF7ED"
+                                }
+                            }
+                        }
+                    );
+
+
+                    styleCell(
+                        worksheet,
+                        excelRow,
+                        4,
+                        {
+                            font: {
+                                bold: true,
+                                color: "C2410C"
+                            }
+                        }
+                    );
+
+                    break;
+
+
+                case "summary":
+
+                    styleRow(
+                        worksheet,
+                        excelRow,
+                        7,
+                        {
+                            fill: {
+                                fgColor: {
+                                    rgb: "F8FAFC"
+                                }
+                            },
+
+                            font: {
+                                bold: true
+                            }
+                        }
+                    );
+
+                    break;
+
+
+                case "total":
+
+                    styleRow(
+                        worksheet,
+                        excelRow,
+                        7,
+                        {
+                            fill: {
+                                fgColor: {
+                                    rgb: "E0E7FF"
+                                }
+                            },
+
+                            font: {
+                                name: "맑은 고딕",
+                                sz: 11,
+                                bold: true,
+                                color: "3730A3"
+                            }
+                        }
+                    );
+
+                    break;
+
+
+                case "percent":
+
+                    styleRow(
+                        worksheet,
+                        excelRow,
+                        7,
+                        {
+                            fill: {
+                                fgColor: {
+                                    rgb: "EEF2FF"
+                                }
+                            },
+
+                            font: {
+                                bold: true,
+                                color: "3730A3"
+                            }
+                        }
+                    );
+
+                    break;
+
+
+                case "separator":
+
+                    break;
+            }
+
+        }
+    );
+
+
+    /*
+     * 행 높이
+     */
+    worksheet["!rows"] = [];
+
+    rows.forEach(
+        row => {
+
+            let height = 20;
+
+            if (row.type === "title") {
+                height = 30;
+            }
+
+            if (row.type === "section") {
+                height = 23;
+            }
+
+            if (row.type === "header") {
+                height = 24;
+            }
+
+            worksheet["!rows"].push({
+                hpt: height
+            });
+
+        }
+    );
+
+
+    /*
+     * 인쇄 설정
+     *
+     * A4 / 가로 / 한 페이지에 맞춤
+     */
+    worksheet["!pageSetup"] = {
+
         paperSize: "9",
+
         orientation: "landscape",
+
         fitToWidth: 1,
+
         fitToHeight: 1
     };
 
-    ws["!margins"] = {
+
+    worksheet["!sheetPr"] = {
+
+        pageSetUpPr: {
+            fitToPage: true
+        }
+    };
+
+
+    worksheet["!margins"] = {
+
         left: 0.25,
+
         right: 0.25,
-        top: 0.5,
-        bottom: 0.5,
+
+        top: 0.45,
+
+        bottom: 0.45,
+
         header: 0.2,
+
         footer: 0.2
     };
 
-    ws["!printOptions"] = {
+
+    worksheet["!printOptions"] = {
+
         horizontalCentered: true,
-        verticalCentered: false
+
+        verticalCentered: false,
+
+        gridLines: false
+    };
+
+
+    /*
+     * 인쇄 영역
+     */
+    worksheet["!printArea"] =
+        worksheet["!ref"];
+
+
+    return worksheet;
+}
+
+
+/* =========================================================
+   Excel 스타일 도우미
+========================================================= */
+
+function styleRow(
+    worksheet,
+    rowNumber,
+    columnCount,
+    style
+) {
+
+    for (
+        let c = 0;
+        c < columnCount;
+        c++
+    ) {
+
+        const address =
+            XLSX.utils.encode_cell({
+                r: rowNumber - 1,
+                c
+            });
+
+
+        if (!worksheet[address]) {
+
+            worksheet[address] = {
+                v: "",
+                t: "s"
+            };
+        }
+
+
+        worksheet[address].s = mergeStyles(
+            worksheet[address].s || {},
+            style
+        );
+    }
+}
+
+
+function styleCell(
+    worksheet,
+    rowNumber,
+    columnNumber,
+    style
+) {
+
+    const address =
+        XLSX.utils.encode_cell({
+            r: rowNumber - 1,
+            c: columnNumber
+        });
+
+
+    if (!worksheet[address]) {
+
+        worksheet[address] = {
+            v: "",
+            t: "s"
+        };
+    }
+
+
+    worksheet[address].s =
+        mergeStyles(
+            worksheet[address].s || {},
+            style
+        );
+}
+
+
+function mergeStyles(
+    base,
+    extra
+) {
+
+    return {
+
+        ...base,
+
+        ...extra,
+
+        font: {
+            ...(base.font || {}),
+            ...(extra.font || {})
+        },
+
+        fill: {
+            ...(base.fill || {}),
+            ...(extra.fill || {})
+        },
+
+        alignment: {
+            ...(base.alignment || {}),
+            ...(extra.alignment || {})
+        },
+
+        border: {
+            ...(base.border || {}),
+            ...(extra.border || {})
+        }
     };
 }
 
 
 /* =========================================================
-   Sheet 이름
+   Excel Sheet 이름
 ========================================================= */
 
 function safeSheetName(name) {
 
     let result =
         String(name)
-            .replace(/[\\\/\?\*\[\]\:]/g, "_")
-            .substring(0, 31);
+            .replace(
+                /[\\\/\?\*\[\]\:]/g,
+                "_"
+            )
+            .substring(
+                0,
+                31
+            );
+
 
     return result || "과목";
 }
@@ -1853,40 +4112,124 @@ function downloadBlob(
             { type }
         );
 
+
     const url =
-        URL.createObjectURL(blob);
+        URL.createObjectURL(
+            blob
+        );
 
-    const a =
-        document.createElement("a");
 
-    a.href = url;
-    a.download = filename;
+    const link =
+        document.createElement(
+            "a"
+        );
 
-    document.body.appendChild(a);
 
-    a.click();
+    link.href = url;
 
-    a.remove();
+    link.download =
+        filename;
 
-    URL.revokeObjectURL(url);
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    link.remove();
+
+
+    URL.revokeObjectURL(
+        url
+    );
 }
 
 
 /* =========================================================
-   HTML 보안
+   유틸리티
 ========================================================= */
+
+function formatNumber(value) {
+
+    const number =
+        Number(value) || 0;
+
+
+    return Number.isInteger(number)
+        ? String(number)
+        : number.toFixed(2)
+            .replace(/0+$/, "")
+            .replace(/\.$/, "");
+}
+
+
+function formatDate(value) {
+
+    if (!value) {
+        return "";
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return "";
+    }
+
+
+    return (
+        date.getFullYear() +
+        "." +
+        String(
+            date.getMonth() + 1
+        ).padStart(2, "0") +
+        "." +
+        String(
+            date.getDate()
+        ).padStart(2, "0")
+    );
+}
+
 
 function escapeHtml(value) {
 
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 
+
 function escapeAttr(value) {
+
     return escapeHtml(value);
 }
 
@@ -1896,6 +4239,7 @@ function escapeAttr(value) {
 ========================================================= */
 
 renderSubjects();
+
 renderContent();
 
 </script>
